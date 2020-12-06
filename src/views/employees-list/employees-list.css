@@ -1,0 +1,20 @@
+.list-wr {
+  padding-left: 40px;
+}
+
+.list:not(:first-child) {
+  padding-top: 40px;
+}
+
+.list-letter {
+  font-weight: 700;
+}
+
+.list-element {
+  display: flex;
+  padding-top: 20px;
+}
+
+.list-element input[type="checkbox"] {
+  margin-left: 10px;
+}

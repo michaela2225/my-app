@@ -1,25 +1,54 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import moment from 'moment';
+
+import { employeesWithLetter, employeeApiUrl } from './constants';
+import { EmployeeContext } from './exployee-context';
+
+import EmployeesList from './views/employees-list/employees-list';
+import DateBrithdayList from './views/date-brithday-list/date-brithday-list';
+
 import './App.css';
 
-function App() {
+const App = () => {
+  const [finalListEmployee, setFinalListEmployee] = useState([]);
+
+  useEffect(() => {
+    fetch(employeeApiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        data.sort((first, second) =>
+          second.lastName > first.lastName ? -1 : 1,
+        );
+        data.forEach((employee) => {
+          employee.showDateBirthday = false;
+          employee.dob = moment(employee.dob).format('D MMMM YYYY');
+        });
+        return data;
+      })
+      .then((sorteredArr) => {
+        employeesWithLetter.forEach((item) => {
+          sorteredArr.forEach((employee) => {
+            employee.lastName[0] === item.letter &&
+              item.employees.push(employee);
+          });
+        });
+        setFinalListEmployee(employeesWithLetter);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="main-wr">
+      <EmployeeContext.Provider
+        value={{
+          employees: finalListEmployee,
+          setEmployees: setFinalListEmployee,
+        }}
+      >
+        <EmployeesList />
+        <DateBrithdayList />
+      </EmployeeContext.Provider>
     </div>
   );
-}
+};
 
 export default App;
